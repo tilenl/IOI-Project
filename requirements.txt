@@ -13,3 +13,8 @@ panel
 numpy
 matplotlib
 ipykernel
+xarray
+
+# engina za xarray
+netcdf4
+h5netcdf
