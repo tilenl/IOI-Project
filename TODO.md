@@ -4,13 +4,13 @@
 
 [x] **Format the directory as stated in the PROJECT_STRUCTURE_PLANS.md under the plan 1**
 
-[] **Updating paths in documentation**: update the cursor commands and rules to reflect the change in directories.
+[x] **Updating paths in documentation**: update the cursor commands and rules to reflect the change in directories.
 
-[] **Update README.md paths to reflect new structure**
+[x] **Update README.md paths to reflect new structure**
 
-[] **Update installation.md references**
+[x] **Update installation.md references**
 
-[] **Update `.gitignore` to reflect new data location**
+[x] **Update `.gitignore` to reflect new data location**
 
 [] **Update the SESSION_STATE.md with a section "Project Map"**: this section depicts whre the model should find files. It gives the model the "big picture" of the file system. It tells the model where to place any new files if it should create them.
 
