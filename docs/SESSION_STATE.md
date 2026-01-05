@@ -12,18 +12,50 @@
 - **Data Source**: MITgcm LLC4320 Pre-SWOT JPL L4 ACC SMST v1.0 (each field >400TB)
 - **Access Method**: Direct HTTPS access via OpenVisus framework
 
-## Project Structure
+## Project Map
 
-Current files:
-- `README.md` - Project introduction and overview
-- `installation.md` - Detailed setup instructions for Python 3.10 environment
-- `requirements.txt` - Python dependencies with version constraints
-- `ieee_scivis_llc4320.ipynb` - Main demo notebook (verification notebook)
-- `LLC4320_metadata.ipynb` - Additional examples and metadata extraction
-- `llc4320_latlon.nc` - NetCDF coordinate file (excluded from git, large file)
-- `IOI_Project_proposal.pdf` - Original project proposal
-- `PROJECT_STRUCTURE_PLANS.md` - Two alternative organizational structure plans
-- `.gitignore` - Excludes `.venv`, `.cursor`, cache, and data files
+**Directory Structure Overview** - This section provides the "big picture" of the file system and guides where to place new files.
+
+### Current Structure (Plan 1: Scientific Project Structure)
+
+```
+.
+├── docs/                          # Documentation files
+│   ├── README.md                  # Main project overview
+│   ├── installation.md             # Setup instructions
+│   ├── SESSION_STATE.md            # This file - development session tracking
+│   ├── PROJECT_STRUCTURE_PLANS.md # Structure planning document
+│   └── .markdown_data/             # Images/assets for markdown docs
+│
+├── notebooks/                     # Jupyter notebooks
+│   ├── ieee_scivis_llc4320.ipynb  # Main demo/verification notebook
+│   └── LLC4320_metadata.ipynb     # Metadata examples notebook
+│
+├── data/                          # Data files (gitignored)
+│   └── llc4320_latlon.nc         # Coordinate data file
+│
+├── config/                        # Configuration files
+│   └── requirements.txt           # Python dependencies
+│
+├── references/                    # External references
+│   └── IOI_Project_proposal.pdf   # Project proposal PDF
+│
+├── analysis/                      # Analysis and research documents
+│   └── data_access_analysis.md    # Data access and streamlines analysis
+│
+├── TODO.md                        # Task tracking (root for visibility)
+└── .gitignore                     # Git ignore rules (root - required by Git)
+```
+
+### File Placement Guidelines
+
+- **Documentation** → `docs/` (markdown files, guides; assets → `docs/.markdown_data/`)
+- **Analysis** → `analysis/` (research documents, findings, processing pipelines)
+- **Jupyter Notebooks** → `notebooks/` (all `.ipynb` files)
+- **Data Files** → `data/` (all gitignored: NetCDF, HDF5, cache files)
+- **Configuration** → `config/` (dependencies, settings; `.gitignore` must stay at root)
+- **References** → `references/` (PDFs, papers, proposals)
+- **Root**: `TODO.md`, `.gitignore`, `.venv/`, `.cursor/` (all gitignored except TODO.md)
 
 ## Architectural Decisions
 
@@ -34,9 +66,9 @@ Current files:
 
 ## Recent Changes
 
-- Created PROJECT_STRUCTURE_PLANS.md with two alternative organizational structures (Plan 1: Scientific structure by function, Plan 2: Flat structure with minimal organization)
-- Completed initial SESSION_STATE.md and TODO.md setup
-- Initial project setup with documentation and notebooks
+- **Data Access Analysis Complete**: Created `analysis/data_access_analysis.md` documenting available fields (theta, salt, w only; no u/v horizontal velocity) and alternative visualization approaches
+- **README Updated**: Added IEEE SciVis Contest 2026 challenge link
+- **All Initial Setup Tasks Complete**: All 8 tasks from TODO.md completed
 
 ## Blockers
 
@@ -44,6 +76,6 @@ None currently.
 
 ## Next Step
 
-Work on the next task as stated in the `to-do-tasks-to-work-on` rule.
+**Implement alternative visualization approaches**: Since horizontal velocity (u, v) is not available, explore alternative methods: vertical velocity visualization, gradient-based pseudo-velocity from temperature/salinity, or multi-variable visualizations combining available fields with advanced rendering techniques.
 
 
