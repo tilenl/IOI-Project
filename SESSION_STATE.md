@@ -22,6 +22,7 @@ Current files:
 - `LLC4320_metadata.ipynb` - Additional examples and metadata extraction
 - `llc4320_latlon.nc` - NetCDF coordinate file (excluded from git, large file)
 - `IOI_Project_proposal.pdf` - Original project proposal
+- `PROJECT_STRUCTURE_PLANS.md` - Two alternative organizational structure plans
 - `.gitignore` - Excludes `.venv`, `.cursor`, cache, and data files
 
 ## Architectural Decisions
@@ -33,9 +34,9 @@ Current files:
 
 ## Recent Changes
 
+- Created PROJECT_STRUCTURE_PLANS.md with two alternative organizational structures (Plan 1: Scientific structure by function, Plan 2: Flat structure with minimal organization)
+- Completed initial SESSION_STATE.md and TODO.md setup
 - Initial project setup with documentation and notebooks
-- Installation guide created with Python 3.10 setup instructions
-- Requirements file established with version-locked OpenVisus packages
 
 ## Blockers
 
@@ -43,5 +44,6 @@ None currently.
 
 ## Next Step
 
-**Plan the structure of the project**: Reason and come up with 2 plans of how to tidy the files to get a functional and readable environment. Create a plan a structure that reflects what this project is.
+Work on the next task as stated in the `to-do-tasks-to-work-on` rule.
+
 
