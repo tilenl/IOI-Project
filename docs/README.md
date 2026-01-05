@@ -10,11 +10,11 @@ This project provides tools and examples for working with the ECCO LLC4320 ocean
 
 ### Verification
 
-After successfully completing the installation steps, verify your setup by running the [`ieee_scivis_llc4320.ipynb`](ieee_scivis_llc4320.ipynb) notebook. This notebook demonstrates how to read and visualize LLC4320 data ~~from the OSDF/Pelican cloud storage~~ using direct HTTPS access with the OpenVisus framework. If all cells execute successfully, your installation is complete and working correctly.
+After successfully completing the installation steps, verify your setup by running the [`ieee_scivis_llc4320.ipynb`](../notebooks/ieee_scivis_llc4320.ipynb) notebook. This notebook demonstrates how to read and visualize LLC4320 data ~~from the OSDF/Pelican cloud storage~~ using direct HTTPS access with the OpenVisus framework. If all cells execute successfully, your installation is complete and working correctly.
 
 ### Additional Examples
 
-Once you've verified your installation, explore the [`LLC4320_metadata.ipynb`](LLC4320_metadata.ipynb) notebook for additional examples and different ways to work with the dataset, including extracting latitude and longitude information and other metadata operations.
+Once you've verified your installation, explore the [`LLC4320_metadata.ipynb`](../notebooks/LLC4320_metadata.ipynb) notebook for additional examples and different ways to work with the dataset, including extracting latitude and longitude information and other metadata operations.
 
 ## Dataset Information
 
@@ -26,38 +26,51 @@ Once you've verified your installation, explore the [`LLC4320_metadata.ipynb`](L
 
 ```
 .
-├── .markdown_data/              # Images and assets used in markdown files (especially installation.md)
-├── installation.md              # Detailed installation guide (read this first!)
-├── README.md                    # This file - project introduction and overview
-├── requirements.txt             # Python package dependencies (used in installation.md)
-├── .gitignore                   # Git ignore file for excluding local files (.venv, .cursor, cache, data files)
-├── ieee_scivis_llc4320.ipynb   # Main demo notebook - verify installation by running this
-├── LLC4320_metadata.ipynb      # Additional demo notebook - more examples of dataset usage
-└── IOI_Project_proposal.pdf    # Original project proposal with visualization goals
+├── docs/                        # Documentation
+│   ├── .markdown_data/          # Images and assets used in markdown files
+│   ├── installation.md          # Detailed installation guide (read this first!)
+│   ├── README.md                # This file - project introduction and overview
+│   └── SESSION_STATE.md         # Development session tracking
+│
+├── notebooks/                   # Jupyter notebooks
+│   ├── ieee_scivis_llc4320.ipynb # Main demo notebook - verify installation by running this
+│   └── LLC4320_metadata.ipynb   # Additional demo notebook - more examples of dataset usage
+│
+├── data/                        # Data files (gitignored)
+│   └── llc4320_latlon.nc       # Coordinate data file
+│
+├── config/                      # Configuration files
+│   └── requirements.txt         # Python package dependencies
+│
+├── references/                  # External references
+│   └── IOI_Project_proposal.pdf # Original project proposal with visualization goals
+│
+├── TODO.md                      # Task tracking (root for visibility)
+└── .gitignore                   # Git ignore file for excluding local files
 ```
 
 ### File Descriptions
 
-- **`.markdown_data/`**: Contains images and visual assets referenced in the markdown documentation files, particularly those used in `installation.md`.
+- **`docs/.markdown_data/`**: Contains images and visual assets referenced in the markdown documentation files, particularly those used in `installation.md`.
 
-- **`installation.md`** and **`README.md`**: These markdown files serve as introductory documentation for the project. Start with `installation.md` for setup instructions, then refer to `README.md` for project overview and usage.
+- **`docs/installation.md`** and **`docs/README.md`**: These markdown files serve as introductory documentation for the project. Start with `docs/installation.md` for setup instructions, then refer to `docs/README.md` for project overview and usage.
 
-- **`requirements.txt`**: Lists all Python package dependencies required for this project. This file is referenced and used during the installation process described in `installation.md`.
+- **`config/requirements.txt`**: Lists all Python package dependencies required for this project. This file is referenced and used during the installation process described in `docs/installation.md`.
 
-- **`.gitignore`**: Git ignore file that excludes local development files from version control, including `.venv` (virtual environment), `.cursor` (editor files), `.visus_cache_can_be_deleted` (OpenVisus cache directory), and `llc4320_latlon.nc` (large data file).
+- **`.gitignore`**: Git ignore file that excludes local development files from version control, including `.venv` (virtual environment), `.cursor` (editor files), `.visus_cache_can_be_deleted` (OpenVisus cache directory), and `data/llc4320_latlon.nc` (large data file).
 
-- **`ieee_scivis_llc4320.ipynb`**: The primary demonstration notebook. After completing installation, run this notebook to verify that everything is set up correctly. It shows how to access and visualize LLC4320 ocean data.
+- **`notebooks/ieee_scivis_llc4320.ipynb`**: The primary demonstration notebook. After completing installation, run this notebook to verify that everything is set up correctly. It shows how to access and visualize LLC4320 ocean data.
 
-- **`LLC4320_metadata.ipynb`**: A secondary demo notebook providing additional examples of how to work with the LLC4320 dataset, including metadata extraction and other data manipulation techniques. **Note**: This notebook requires the `llc4320_latlon.nc` file, which is not tracked in git due to its size. See download instructions below.
+- **`notebooks/LLC4320_metadata.ipynb`**: A secondary demo notebook providing additional examples of how to work with the LLC4320 dataset, including metadata extraction and other data manipulation techniques. **Note**: This notebook requires the `data/llc4320_latlon.nc` file, which is not tracked in git due to its size. See download instructions below.
 
-- **`llc4320_latlon.nc`**: A NetCDF file containing latitude and longitude coordinate information for the LLC4320 dataset, used in the metadata notebook examples. This file is excluded from version control (see `.gitignore`) and must be downloaded separately. Download link is provided in the `LLC4320_metadata.ipynb` notebook, or contact aashishpanta0@gmail.com for access.
+- **`data/llc4320_latlon.nc`**: A NetCDF file containing latitude and longitude coordinate information for the LLC4320 dataset, used in the metadata notebook examples. This file is excluded from version control (see `.gitignore`) and must be downloaded separately. Download link is provided in the `notebooks/LLC4320_metadata.ipynb` notebook, or contact aashishpanta0@gmail.com for access.
 
-- **`IOI_Project_proposal.pdf`**: Contains the original project proposal and idea describing what we are trying to visualize for our final project.
+- **`references/IOI_Project_proposal.pdf`**: Contains the original project proposal and idea describing what we are trying to visualize for our final project.
 
 ## Requirements
 
 - Python 3.10 (3.10.16 tested) - **Important**: Later versions are not supported due to OpenVisus library compatibility
-- All other dependencies are listed in `requirements.txt`
+- All other dependencies are listed in `config/requirements.txt`
 
 ## Notes
 
