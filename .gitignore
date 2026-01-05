@@ -1,4 +1,4 @@
 .cursor
 .venv
 .visus_cache_can_be_deleted
-llc4320_latlon.nc
+data/llc4320_latlon.nc
