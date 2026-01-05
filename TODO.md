@@ -2,7 +2,15 @@
 
 [x] **Plan the structure of the project**: reason and come up with 2 plans of how to tidy the files to get a functional and readable environment. Create a plan a structure that reflects what this project is.
 
-[] **Format the directory as stated in the PROJECT_STRUCTURE_PLANS.md**: 
+[x] **Format the directory as stated in the PROJECT_STRUCTURE_PLANS.md under the plan 1**
+
+[] **Updating paths in documentation**: update the cursor commands and rules to reflect the change in directories.
+
+[] **Update README.md paths to reflect new structure**
+
+[] **Update installation.md references**
+
+[] **Update `.gitignore` to reflect new data location**
 
 [] **Update the SESSION_STATE.md with a section "Project Map"**: this section depicts whre the model should find files. It gives the model the "big picture" of the file system. It tells the model where to place any new files if it should create them.
 
