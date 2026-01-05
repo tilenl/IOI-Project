@@ -18,6 +18,7 @@ Once you've verified your installation, explore the [`LLC4320_metadata.ipynb`](.
 
 ## Dataset Information
 
+- **Visualization Challenge**: [IEEE SciVis Contest 2026 - ECCO LLC4320 Data](https://sciviscontest2026.github.io/data/home)
 - **Data Source**: [MITgcm LLC4320 Pre-SWOT JPL L4 ACC SMST v1.0](https://podaac.jpl.nasa.gov/dataset/MITgcm_LLC4320_Pre-SWOT_JPL_L4_ACC_SMST_v1.0)
 - **Dataset Documentation**: [ECCO LLC4320 Data Overview](https://sciviscontest2026.github.io/data/home)
 - **Visualization Reference**: [Beautiful Streamlines for Visualizing 2D Vector Fields](https://www.allnans.com/jekyll/update/2018/04/04/beautiful-streamlines.html)
