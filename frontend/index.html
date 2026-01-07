@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLC4320 Data API Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .section h2 {
+            color: #444;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .status.loading {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .data-preview {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: #333;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌊 LLC4320 Data API Test</h1>
+        <p class="subtitle">Test the Flask API endpoints and visualize sample data</p>
+
+        <!-- API Configuration -->
+        <div class="section">
+            <h2>API Configuration</h2>
+            <div class="form-group">
+                <label for="apiUrl">API Base URL</label>
+                <input type="text" id="apiUrl" value="http://localhost:5000" placeholder="http://localhost:5000">
+            </div>
+        </div>
+
+        <!-- Metadata Section -->
+        <div class="section">
+            <h2>1. Get Metadata</h2>
+            <div class="form-group">
+                <label for="metadataField">Field</label>
+                <select id="metadataField">
+                    <option value="salinity">Salinity</option>
+                    <option value="temperature">Temperature</option>
+                    <option value="vertical_velocity">Vertical Velocity</option>
+                </select>
+            </div>
+            <button onclick="fetchMetadata()">Fetch Metadata</button>
+            <div id="metadataStatus"></div>
+            <div id="metadataResult"></div>
+        </div>
+
+        <!-- Data Slice Section -->
+        <div class="section">
+            <h2>2. Get Data Slice</h2>
+            <div class="form-group">
+                <label for="dataField">Field</label>
+                <select id="dataField">
+                    <option value="salinity">Salinity</option>
+                    <option value="temperature">Temperature</option>
+                    <option value="vertical_velocity">Vertical Velocity</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="timestep">Timestep</label>
+                    <input type="number" id="timestep" value="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="depthLevel">Depth Level</label>
+                    <input type="number" id="depthLevel" value="0" min="0" max="89">
+                </div>
+                <div class="form-group">
+                    <label for="quality">Quality</label>
+                    <input type="number" id="quality" value="-12" min="-12" max="0">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="latMin">Latitude Min</label>
+                    <input type="number" id="latMin" value="-40" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="latMax">Latitude Max</label>
+                    <input type="number" id="latMax" value="-10" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="lonMin">Longitude Min</label>
+                    <input type="number" id="lonMin" value="105" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="lonMax">Longitude Max</label>
+                    <input type="number" id="lonMax" value="160" step="0.1">
+                </div>
+            </div>
+            <div class="button-group">
+                <button onclick="fetchDataSlice()">Fetch Data Slice</button>
+                <button onclick="fetchDataSlice('base64')">Fetch as Base64</button>
+            </div>
+            <div id="dataStatus"></div>
+            <div id="dataResult"></div>
+        </div>
+
+        <!-- Coordinates Section -->
+        <div class="section">
+            <h2>3. Get Coordinates</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="coordLatMin">Latitude Min (optional)</label>
+                    <input type="number" id="coordLatMin" step="0.1" placeholder="Leave empty for full grid">
+                </div>
+                <div class="form-group">
+                    <label for="coordLatMax">Latitude Max (optional)</label>
+                    <input type="number" id="coordLatMax" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="coordLonMin">Longitude Min (optional)</label>
+                    <input type="number" id="coordLonMin" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="coordLonMax">Longitude Max (optional)</label>
+                    <input type="number" id="coordLonMax" step="0.1">
+                </div>
+            </div>
+            <button onclick="fetchCoordinates()">Fetch Coordinates</button>
+            <div id="coordStatus"></div>
+            <div id="coordResult"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = () => document.getElementById('apiUrl').value;
+
+        function showStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function clearStatus(elementId) {
+            document.getElementById(elementId).innerHTML = '';
+        }
+
+        async function fetchMetadata() {
+            const field = document.getElementById('metadataField').value;
+            const url = `${API_BASE()}/api/metadata?field=${field}`;
+            
+            showStatus('metadataStatus', 'Loading metadata...', 'loading');
+            clearStatus('metadataResult');
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to fetch metadata');
+                }
+
+                showStatus('metadataStatus', '✓ Metadata loaded successfully', 'success');
+                
+                const html = `
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-label">Field</div>
+                            <div class="stat-value">${data.field}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Total Timesteps</div>
+                            <div class="stat-value">${data.total_timesteps.toLocaleString()}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Dimensions (X × Y × Z)</div>
+                            <div class="stat-value">${data.dimensions.x} × ${data.dimensions.y} × ${data.dimensions.z}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Data Type</div>
+                            <div class="stat-value">${data.data_type}</div>
+                        </div>
+                    </div>
+                    <h3 style="margin-top: 20px; margin-bottom: 10px;">Full Response:</h3>
+                    <pre class="data-preview">${JSON.stringify(data, null, 2)}</pre>
+                `;
+                document.getElementById('metadataResult').innerHTML = html;
+            } catch (error) {
+                showStatus('metadataStatus', `✗ Error: ${error.message}`, 'error');
+                document.getElementById('metadataResult').innerHTML = `<pre>${error.message}</pre>`;
+            }
+        }
+
+        async function fetchDataSlice(format = 'array') {
+            const field = document.getElementById('dataField').value;
+            const timestep = document.getElementById('timestep').value;
+            const depthLevel = document.getElementById('depthLevel').value;
+            const latMin = document.getElementById('latMin').value;
+            const latMax = document.getElementById('latMax').value;
+            const lonMin = document.getElementById('lonMin').value;
+            const lonMax = document.getElementById('lonMax').value;
+            const quality = document.getElementById('quality').value;
+
+            const url = `${API_BASE()}/api/data/slice?` +
+                `field=${field}&` +
+                `timestep=${timestep}&` +
+                `depth_level=${depthLevel}&` +
+                `lat_min=${latMin}&lat_max=${latMax}&` +
+                `lon_min=${lonMin}&lon_max=${lonMax}&` +
+                `quality=${quality}&` +
+                `format=${format}`;
+
+            showStatus('dataStatus', 'Loading data slice... (this may take a moment)', 'loading');
+            clearStatus('dataResult');
+
+            try {
+                const startTime = Date.now();
+                const response = await fetch(url);
+                const data = await response.json();
+                const loadTime = ((Date.now() - startTime) / 1000).toFixed(2);
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to fetch data');
+                }
+
+                showStatus('dataStatus', `✓ Data loaded successfully in ${loadTime}s`, 'success');
+
+                // Calculate statistics
+                const dataArray = data.data.data;
+                let min = Infinity, max = -Infinity, sum = 0, count = 0;
+
+                if (format === 'array' && Array.isArray(dataArray)) {
+                    // Flatten 2D array for stats
+                    for (const row of dataArray) {
+                        if (Array.isArray(row)) {
+                            for (const val of row) {
+                                if (typeof val === 'number' && !isNaN(val)) {
+                                    min = Math.min(min, val);
+                                    max = Math.max(max, val);
+                                    sum += val;
+                                    count++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                const mean = count > 0 ? (sum / count).toFixed(4) : 'N/A';
+                const shape = data.shape || 'N/A';
+
+                const html = `
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-label">Data Shape</div>
+                            <div class="stat-value">${shape[0]} × ${shape[1]}</div>
+                        </div>
+                        ${format === 'array' && count > 0 ? `
+                            <div class="stat-card">
+                                <div class="stat-label">Min Value</div>
+                                <div class="stat-value">${min.toFixed(4)}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Max Value</div>
+                                <div class="stat-value">${max.toFixed(4)}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Mean Value</div>
+                                <div class="stat-value">${mean}</div>
+                            </div>
+                        ` : ''}
+                        <div class="stat-card">
+                            <div class="stat-label">Format</div>
+                            <div class="stat-value">${data.data.format}</div>
+                        </div>
+                    </div>
+                    <h3 style="margin-top: 20px; margin-bottom: 10px;">Data Preview (first 10×10):</h3>
+                    <pre class="data-preview">${format === 'array' && Array.isArray(dataArray) 
+                        ? JSON.stringify(dataArray.slice(0, 10).map(row => Array.isArray(row) ? row.slice(0, 10) : row), null, 2)
+                        : 'Base64 format - decode on frontend to view'}
+                    </pre>
+                    <h3 style="margin-top: 20px; margin-bottom: 10px;">Coordinates Preview:</h3>
+                    <pre class="data-preview">Latitude range: [${data.coordinates.latitude[0]?.[0]?.toFixed(4)}, ${data.coordinates.latitude[data.coordinates.latitude.length - 1]?.[data.coordinates.latitude[0]?.length - 1]?.toFixed(4)}]
+Longitude range: [${data.coordinates.longitude[0]?.[0]?.toFixed(4)}, ${data.coordinates.longitude[data.coordinates.longitude.length - 1]?.[data.coordinates.longitude[0]?.length - 1]?.toFixed(4)}]
+Shape: ${data.coordinates.latitude.length} × ${data.coordinates.latitude[0]?.length || 0}</pre>
+                    <h3 style="margin-top: 20px; margin-bottom: 10px;">Full Response (truncated):</h3>
+                    <pre class="data-preview">${JSON.stringify({
+                        ...data,
+                        data: {
+                            ...data.data,
+                            data: format === 'array' && Array.isArray(dataArray) && dataArray.length > 0
+                                ? `[Array(${dataArray.length}×${dataArray[0]?.length || 0}) - truncated]`
+                                : data.data.data
+                        }
+                    }, null, 2)}</pre>
+                `;
+                document.getElementById('dataResult').innerHTML = html;
+            } catch (error) {
+                showStatus('dataStatus', `✗ Error: ${error.message}`, 'error');
+                document.getElementById('dataResult').innerHTML = `<pre>${error.message}</pre>`;
+            }
+        }
+
+        async function fetchCoordinates() {
+            const latMin = document.getElementById('coordLatMin').value;
+            const latMax = document.getElementById('coordLatMax').value;
+            const lonMin = document.getElementById('coordLonMin').value;
+            const lonMax = document.getElementById('coordLonMax').value;
+
+            let url = `${API_BASE()}/api/coordinates`;
+            const params = [];
+            if (latMin) params.push(`lat_min=${latMin}`);
+            if (latMax) params.push(`lat_max=${latMax}`);
+            if (lonMin) params.push(`lon_min=${lonMin}`);
+            if (lonMax) params.push(`lon_max=${lonMax}`);
+            if (params.length > 0) {
+                url += '?' + params.join('&');
+            }
+
+            showStatus('coordStatus', 'Loading coordinates...', 'loading');
+            clearStatus('coordResult');
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to fetch coordinates');
+                }
+
+                showStatus('coordStatus', '✓ Coordinates loaded successfully', 'success');
+
+                const html = `
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-label">Shape (Y × X)</div>
+                            <div class="stat-value">${data.shape.y} × ${data.shape.x}</div>
+                        </div>
+                        ${data.lat_range ? `
+                            <div class="stat-card">
+                                <div class="stat-label">Latitude Range</div>
+                                <div class="stat-value">[${data.lat_range[0]}, ${data.lat_range[1]}]</div>
+                            </div>
+                        ` : ''}
+                        ${data.lon_range ? `
+                            <div class="stat-card">
+                                <div class="stat-label">Longitude Range</div>
+                                <div class="stat-value">[${data.lon_range[0]}, ${data.lon_range[1]}]</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <h3 style="margin-top: 20px; margin-bottom: 10px;">Coordinates Preview (first 5×5):</h3>
+                    <pre class="data-preview">Latitude:
+${JSON.stringify(data.latitude.slice(0, 5).map(row => row.slice(0, 5)), null, 2)}
+
+Longitude:
+${JSON.stringify(data.longitude.slice(0, 5).map(row => row.slice(0, 5)), null, 2)}</pre>
+                `;
+                document.getElementById('coordResult').innerHTML = html;
+            } catch (error) {
+                showStatus('coordStatus', `✗ Error: ${error.message}`, 'error');
+                document.getElementById('coordResult').innerHTML = `<pre>${error.message}</pre>`;
+            }
+        }
+
+        // Test API connection on load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${API_BASE()}/api/health`);
+                const data = await response.json();
+                if (response.ok) {
+                    showStatus('metadataStatus', `✓ API connected: ${data.service}`, 'success');
+                }
+            } catch (error) {
+                showStatus('metadataStatus', `✗ Cannot connect to API: ${error.message}. Make sure the Flask server is running.`, 'error');
+            }
+        });
+    </script>
+</body>
+</html>
+
