@@ -188,31 +188,6 @@ Get data for a specific timestep across multiple depth levels (3D data: depth, y
 }
 ```
 
-### Coordinates
-```
-GET /api/coordinates?lat_min=-40&lat_max=-10&lon_min=105&lon_max=160
-```
-Get latitude and longitude coordinate arrays.
-
-**Query Parameters (all optional):**
-- `lat_min` (float): Minimum latitude in degrees. If provided, returns only coordinates in range.
-- `lat_max` (float): Maximum latitude in degrees
-- `lon_min` (float): Minimum longitude in degrees
-- `lon_max` (float): Maximum longitude in degrees
-
-**Response:**
-```json
-{
-  "latitude": [[...], [...], ...],
-  "longitude": [[...], [...], ...],
-  "shape": {"y": 2500, "x": 5500},
-  "lat_range": [-40.0, -10.0],
-  "lon_range": [105.0, 160.0]
-}
-```
-
-If no ranges are provided, returns the full global coordinate grid.
-
 ## Data Format Options
 
 ### Array Format (`format=array`)

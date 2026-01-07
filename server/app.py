@@ -164,46 +164,6 @@ def get_timestep_data():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/api/coordinates", methods=["GET"])
-def get_coordinates():
-    """
-    Get latitude and longitude coordinates.
-    
-    Query parameters (all optional):
-        lat_min (float): Minimum latitude in degrees. If provided, returns only coordinates in range.
-        lat_max (float): Maximum latitude in degrees
-        lon_min (float): Minimum longitude in degrees
-        lon_max (float): Maximum longitude in degrees
-    
-    Returns:
-        JSON with lat and lon arrays. If ranges provided, returns coordinates for that region only.
-    """
-    try:
-        # Parse optional lat/lon ranges
-        lat_min = request.args.get("lat_min")
-        lat_max = request.args.get("lat_max")
-        lon_min = request.args.get("lon_min")
-        lon_max = request.args.get("lon_max")
-        
-        lat_range = None
-        lon_range = None
-        
-        if lat_min is not None and lat_max is not None:
-            lat_range = [float(lat_min), float(lat_max)]
-        if lon_min is not None and lon_max is not None:
-            lon_range = [float(lon_min), float(lon_max)]
-        
-        coordinates = data_service.get_coordinates(
-            lat_range=lat_range,
-            lon_range=lon_range
-        )
-        return jsonify(coordinates)
-    except (ValueError, TypeError) as e:
-        return jsonify({"error": f"Invalid parameter: {str(e)}"}), 400
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
 @app.errorhandler(404)
 def not_found(error):
     """Handle 404 errors."""

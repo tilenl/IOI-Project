@@ -269,31 +269,6 @@
             <div id="dataResult"></div>
         </div>
 
-        <!-- Coordinates Section -->
-        <div class="section">
-            <h2>3. Get Coordinates</h2>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="coordLatMin">Latitude Min (optional)</label>
-                    <input type="number" id="coordLatMin" step="0.1" placeholder="Leave empty for full grid">
-                </div>
-                <div class="form-group">
-                    <label for="coordLatMax">Latitude Max (optional)</label>
-                    <input type="number" id="coordLatMax" step="0.1">
-                </div>
-                <div class="form-group">
-                    <label for="coordLonMin">Longitude Min (optional)</label>
-                    <input type="number" id="coordLonMin" step="0.1">
-                </div>
-                <div class="form-group">
-                    <label for="coordLonMax">Longitude Max (optional)</label>
-                    <input type="number" id="coordLonMax" step="0.1">
-                </div>
-            </div>
-            <button onclick="fetchCoordinates()">Fetch Coordinates</button>
-            <div id="coordStatus"></div>
-            <div id="coordResult"></div>
-        </div>
     </div>
 
     <script>
@@ -444,61 +419,6 @@
             }
         }
 
-        async function fetchCoordinates() {
-            const latMin = document.getElementById('coordLatMin').value;
-            const latMax = document.getElementById('coordLatMax').value;
-            const lonMin = document.getElementById('coordLonMin').value;
-            const lonMax = document.getElementById('coordLonMax').value;
-
-            let url = `${API_BASE()}/api/coordinates`;
-            const params = [];
-            if (latMin) params.push(`lat_min=${latMin}`);
-            if (latMax) params.push(`lat_max=${latMax}`);
-            if (lonMin) params.push(`lon_min=${lonMin}`);
-            if (lonMax) params.push(`lon_max=${lonMax}`);
-            if (params.length > 0) {
-                url += '?' + params.join('&');
-            }
-
-            showStatus('coordStatus', 'Loading coordinates...', 'loading');
-            clearStatus('coordResult');
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error || 'Failed to fetch coordinates');
-                }
-
-                showStatus('coordStatus', '✓ Coordinates loaded successfully', 'success');
-
-                const html = `
-                    <div class="stats">
-                        <div class="stat-card">
-                            <div class="stat-label">Shape (Y × X)</div>
-                            <div class="stat-value">${data.shape.y} × ${data.shape.x}</div>
-                        </div>
-                        ${data.lat_range ? `
-                            <div class="stat-card">
-                                <div class="stat-label">Latitude Range</div>
-                                <div class="stat-value">[${data.lat_range[0]}, ${data.lat_range[1]}]</div>
-                            </div>
-                        ` : ''}
-                        ${data.lon_range ? `
-                            <div class="stat-card">
-                                <div class="stat-label">Longitude Range</div>
-                                <div class="stat-value">[${data.lon_range[0]}, ${data.lon_range[1]}]</div>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-                document.getElementById('coordResult').innerHTML = html;
-            } catch (error) {
-                showStatus('coordStatus', `✗ Error: ${error.message}`, 'error');
-                document.getElementById('coordResult').innerHTML = `<pre>${error.message}</pre>`;
-            }
-        }
 
         // Test API connection on load
         window.addEventListener('load', async () => {

@@ -52,6 +52,7 @@ class DataService:
         
         # Coordinate file path
         self.latlon_file = self.data_dir / "llc4320_latlon.nc"
+        print(f"PATH to llc4320_latlon.nc file: {self.latlon_file}")
         
         # Set up OpenVisus cache
         if cache_dir is None:
@@ -75,8 +76,9 @@ class DataService:
                     "Please download llc4320_latlon.nc to the data folder.\n"
                     "See notebooks/LLC4320_metadata.ipynb for download instructions."
                 )
-            
+            print(f"Loading coordinates from {self.latlon_file}...")
             ds = xr.open_dataset(self.latlon_file)
+            print(f"Coordinates loaded from {self.latlon_file} successfully!")
             self._lat_center = ds["latitude"].values
             self._lon_center = ds["longitude"].values
             ds.close()
@@ -396,68 +398,3 @@ class DataService:
             "quality": quality
         }
     
-    def get_coordinates(self, lat_range: Optional[list] = None, lon_range: Optional[list] = None) -> Dict[str, Any]:
-        """
-        Get latitude and longitude coordinates for a region.
-        
-        Parameters:
-        -----------
-        lat_range : list, optional
-            [min_lat, max_lat] in degrees. If None, returns full coordinate grid.
-        lon_range : list, optional
-            [min_lon, max_lon] in degrees. If None, returns full coordinate grid.
-        
-        Returns:
-        --------
-        dict : Dictionary with lat and lon arrays
-        """
-        self._load_coordinates()
-        
-        if lat_range is None and lon_range is None:
-            # Return full coordinate grid
-            return {
-                "latitude": self._lat_center.tolist(),
-                "longitude": self._lon_center.tolist(),
-                "shape": {
-                    "y": int(self._lat_center.shape[0]),
-                    "x": int(self._lat_center.shape[1])
-                }
-            }
-        else:
-            # Extract coordinates for the specified region
-            if lat_range is None:
-                lat_range = [float(np.min(self._lat_center)), float(np.max(self._lat_center))]
-            if lon_range is None:
-                lon_range = [float(np.min(self._lon_center)), float(np.max(self._lon_center))]
-            
-            mask = (
-                (self._lat_center >= lat_range[0])
-                & (self._lat_center <= lat_range[1])
-                & (self._lon_center >= lon_range[0])
-                & (self._lon_center <= lon_range[1])
-            )
-            
-            y_indices, x_indices = np.where(mask)
-            
-            if len(x_indices) == 0 or len(y_indices) == 0:
-                raise ValueError("No coordinates found in the given lat/lon range.")
-            
-            x_min = int(x_indices.min())
-            x_max = int(x_indices.max()) + 1
-            y_min = int(y_indices.min())
-            y_max = int(y_indices.max()) + 1
-            
-            lat = self._lat_center[y_min:y_max, x_min:x_max]
-            lon = self._lon_center[y_min:y_max, x_min:x_max]
-            
-            return {
-                "latitude": lat.tolist(),
-                "longitude": lon.tolist(),
-                "shape": {
-                    "y": int(lat.shape[0]),
-                    "x": int(lat.shape[1])
-                },
-                "lat_range": lat_range,
-                "lon_range": lon_range
-            }
-
