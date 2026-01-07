@@ -19,7 +19,7 @@ This document analyzes how data is accessed from the LLC4320 dataset endpoints a
 
 ### 1.2 Data Structure
 The LLC4320 dataset uses a **4-dimensional structure**:
-- **Time**: Multiple timesteps (each timestep >30GB)
+- **Time**: 10312 timesteps total (each timestep >30GB)
 - **Z (Depth)**: 90 vertical levels (depth layers)
 - **Y**: 12,960 grid points (latitude-like dimension)
 - **X**: 17,280 grid points (longitude-like dimension)
