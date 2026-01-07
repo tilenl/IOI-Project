@@ -54,8 +54,14 @@
 │   └── IOI_Project_proposal.pdf  # Project proposal PDF
 │
 ├── analysis/                      # Analysis and research documents
-│   └── data_access_analysis.md   # Data access and streamlines analysis
+│   ├── data_access_analysis.md   # Data access and streamlines analysis
+│   └── flask_hosting_analysis.md # Flask hosting and deployment options
 │
+├── Dockerfile                     # Docker container definition for production deployment
+├── docker-compose.yml             # Docker Compose configuration for local development
+├── docker-entrypoint.sh           # Entrypoint script for Docker container
+├── gunicorn_config.py             # Gunicorn production server configuration
+├── .dockerignore                  # Docker ignore file (excludes files from build)
 ├── TODO.md                        # Task tracking (root for visibility)
 └── .gitignore                     # Git ignore rules (root - required by Git)
 ```
@@ -78,15 +84,17 @@
 - **Python Version**: Locked to 3.10 due to OpenVisus compatibility constraints
 - **Data Access**: Using OpenVisus framework for direct HTTPS access (no OSDF/Pelican cloud storage)
 - **API Architecture**: Flask REST API acts as gateway to OpenVisus servers - data loaded on-demand, not cached locally
-- **Frontend**: Simple HTML/JavaScript test interface for API validation
+- **Frontend**: HTML/JavaScript interface with Plotly.js for interactive data visualization (heatmaps with geographic coordinates)
+- **Visualization**: Plotly.js for client-side rendering; iterative coordinate processing to avoid stack overflow on large arrays
 - **Environment Management**: Virtual environment (`.venv`) with strict dependency versioning
+- **Production Server**: Gunicorn WSGI server (Flask's built-in server is development-only)
+- **Containerization**: Docker setup with multi-stage optimization, health checks, and production-ready Gunicorn configuration
 - **Critical Constraint**: Do NOT run `OpenVisus configure` commands after installation (invalidates signatures, causes kernel crashes)
 
 ## Recent Changes
 
-- **Coordinates Endpoint Removed**: Removed `/api/coordinates` endpoint to prevent performance issues (150MB+ data size). Coordinates remain available within data slice responses
-- **Frontend Optimized**: Removed large data array displays from frontend to prevent lag. Only summary statistics shown
-- **API Architecture Complete**: Flask REST API with endpoints for metadata, data slices, and timestep data. Supports salinity, temperature, and vertical velocity fields
+- **Frontend Visualization Complete**: Added interactive data visualization to `frontend/index.html` using Plotly.js. Implemented heatmap visualization for 2D data slices with geographic coordinates, colorbar with field units, and hover tooltips. Supports both array and base64 data formats. Fixed stack overflow error in coordinate processing by replacing `.flat()` and spread operators with iterative min/max functions for large coordinate arrays
+- **Docker Setup Complete**: Created complete Docker containerization setup including Dockerfile (Python 3.10, Gunicorn), docker-compose.yml for local testing, docker-entrypoint.sh for environment variable handling, gunicorn_config.py for production configuration, and comprehensive deployment documentation (`docs/DOCKER_DEPLOYMENT.md`). Added Gunicorn to requirements.txt. Created `config/requirements-docker.txt` with OpenVisus 2.2.135 (Linux-compatible version) since 2.2.141 is not available on PyPI for Linux
 
 ## Blockers
 
@@ -94,6 +102,6 @@ None currently.
 
 ## Next Step
 
-**Research hosting options**: Investigate how to host the Flask server on the internet and whether Flask's built-in server is suitable for production deployment.
+**Test frontend visualization**: Verify the interactive heatmap visualization works correctly with real data from the Flask API. Test with different fields (salinity, temperature, vertical_velocity) and various coordinate ranges to ensure proper rendering.
 
 
