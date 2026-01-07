@@ -9,6 +9,7 @@ the coordinate file `llc4320_latlon.nc`).
 ## Setup
 
 1. **Install dependencies** (if not already installed):
+
    ```bash
    pip install -r ../config/requirements.txt
    ```
@@ -23,11 +24,14 @@ the coordinate file `llc4320_latlon.nc`).
 ### Development Mode
 
 From the project root:
+
 ```bash
-python -m server.app
+# default port 5000 is usually not available, so I use 8080
+python -m server.app --port 8080
 ```
 
 Or from the `server/` directory:
+
 ```bash
 python app.py
 ```
@@ -54,6 +58,7 @@ HOST=127.0.0.1 PORT=8080 python -m server.app
 ```
 
 **Available options:**
+
 - `--port`: Port number (default: 5000, or PORT environment variable)
 - `--host`: Host to bind to (default: 0.0.0.0, or HOST environment variable)
 - `--debug`: Enable Flask debug mode (default: False, or FLASK_DEBUG=true)
@@ -61,6 +66,7 @@ HOST=127.0.0.1 PORT=8080 python -m server.app
 ### Production Mode
 
 For production, use a WSGI server like Gunicorn:
+
 ```bash
 pip install gunicorn
 gunicorn -w 4 -b 0.0.0.0:5000 server.app:app
@@ -69,12 +75,15 @@ gunicorn -w 4 -b 0.0.0.0:5000 server.app:app
 ## API Endpoints
 
 ### Health Check
+
 ```
 GET /api/health
 ```
+
 Returns server status.
 
 **Response:**
+
 ```json
 {
   "status": "healthy",
@@ -83,15 +92,19 @@ Returns server status.
 ```
 
 ### Metadata
+
 ```
 GET /api/metadata?field=salinity
 ```
+
 Get metadata about a dataset field.
 
 **Query Parameters:**
+
 - `field` (str): Field name - 'salinity', 'temperature', 'vertical_velocity', etc. (default: 'salinity')
 
 **Response:**
+
 ```json
 {
   "field": "salt",
@@ -102,7 +115,14 @@ Get metadata about a dataset field.
   },
   "total_timesteps": 10312,
   "data_type": "float32",
-  "available_fields": ["salinity", "temperature", "vertical_velocity", "salt", "theta", "w"],
+  "available_fields": [
+    "salinity",
+    "temperature",
+    "vertical_velocity",
+    "salt",
+    "theta",
+    "w"
+  ],
   "field_units": {
     "salinity": "g kg⁻¹",
     "temperature": "°C",
@@ -112,12 +132,15 @@ Get metadata about a dataset field.
 ```
 
 ### Data Slice (2D)
+
 ```
 GET /api/data/slice?field=salinity&timestep=0&depth_level=0&lat_min=-40&lat_max=-10&lon_min=105&lon_max=160&quality=-12&format=array
 ```
+
 Get a 2D slice of data for a specific timestep and depth level.
 
 **Query Parameters:**
+
 - `field` (str): Field name - 'salinity', 'temperature', 'vertical_velocity', etc. (default: 'salinity')
 - `timestep` (int): Timestep index (default: 0)
 - `depth_level` (int): Depth level index (default: 0)
@@ -129,6 +152,7 @@ Get a 2D slice of data for a specific timestep and depth level.
 - `format` (str): Response format - `'array'` or `'base64'` (default: `'array'`)
 
 **Response:**
+
 ```json
 {
   "field": "salinity",
@@ -150,12 +174,15 @@ Get a 2D slice of data for a specific timestep and depth level.
 ```
 
 ### Timestep Data (3D)
+
 ```
 GET /api/data/timestep?field=salinity&timestep=0&lat_min=-40&lat_max=-10&lon_min=105&lon_max=160&z_min=0&z_max=1&quality=-12&format=array
 ```
+
 Get data for a specific timestep across multiple depth levels (3D data: depth, y, x).
 
 **Query Parameters:**
+
 - `field` (str): Field name - 'salinity', 'temperature', 'vertical_velocity', etc. (default: 'salinity')
 - `timestep` (int): Timestep index (default: 0)
 - `lat_min` (float): **Required** - Minimum latitude in degrees
@@ -168,6 +195,7 @@ Get data for a specific timestep across multiple depth levels (3D data: depth, y
 - `format` (str): Response format - `'array'` or `'base64'` (default: `'array'`)
 
 **Response:**
+
 ```json
 {
   "field": "salinity",
@@ -191,18 +219,21 @@ Get data for a specific timestep across multiple depth levels (3D data: depth, y
 ## Data Format Options
 
 ### Array Format (`format=array`)
+
 - Data is returned as nested JSON arrays (lists)
 - Easy to use directly in JavaScript
 - Larger payload size for big datasets
 - Best for: Small to medium datasets, development
 
 ### Base64 Format (`format=base64`)
+
 - Data is base64-encoded binary
 - More efficient for large datasets
 - Requires decoding on frontend
 - Best for: Large datasets, production
 
 **Frontend decoding example (JavaScript):**
+
 ```javascript
 const base64Data = response.data.data;
 const binaryString = atob(base64Data);
@@ -216,12 +247,14 @@ const floatArray = new Float32Array(bytes.buffer);
 ## Error Handling
 
 All endpoints return appropriate HTTP status codes:
+
 - `200`: Success
 - `400`: Bad request (invalid parameters)
 - `404`: Endpoint not found
 - `500`: Internal server error
 
 Error responses follow this format:
+
 ```json
 {
   "error": "Error message description"
@@ -245,19 +278,20 @@ CORS is enabled by default, allowing frontend applications to access the API fro
 
 ```javascript
 // Fetch metadata
-const metadata = await fetch('http://localhost:5000/api/metadata?field=salinity')
-  .then(res => res.json());
+const metadata = await fetch(
+  "http://localhost:5000/api/metadata?field=salinity",
+).then((res) => res.json());
 
 // Fetch a 2D slice for a specific region
 const slice = await fetch(
-  'http://localhost:5000/api/data/slice?' +
-  'field=salinity&' +
-  'timestep=0&' +
-  'depth_level=0&' +
-  'lat_min=-40&lat_max=-10&' +
-  'lon_min=105&lon_max=160&' +
-  'quality=-12'
-).then(res => res.json());
+  "http://localhost:5000/api/data/slice?" +
+    "field=salinity&" +
+    "timestep=0&" +
+    "depth_level=0&" +
+    "lat_min=-40&lat_max=-10&" +
+    "lon_min=105&lon_max=160&" +
+    "quality=-12",
+).then((res) => res.json());
 
 // Use the data
 const salinityData = slice.data.data;
@@ -276,6 +310,7 @@ The API supports three data fields:
 ## Quality Levels
 
 The `quality` parameter controls data resolution and loading speed:
+
 - **-12**: Fastest, lowest resolution (recommended for development)
 - **-8**: Balanced quality/speed
 - **-6**: Higher quality, slower
@@ -290,4 +325,3 @@ server/
 ├── data_service.py      # Data loading and serialization logic
 └── README.md            # This file
 ```
-
