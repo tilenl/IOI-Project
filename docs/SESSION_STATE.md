@@ -84,11 +84,9 @@
 
 ## Recent Changes
 
-- **Flask API Server Created**: REST API server (`server/app.py`, `server/data_service.py`) with endpoints for metadata, data slices, timestep data, and coordinates. Supports all three fields (salinity, temperature, vertical velocity)
-- **Data Service Restructured**: `server/data_service.py` loads data directly from OpenVisus servers on-demand (not from local files). Dataset objects cached in memory for performance
-- **Frontend Test Page**: HTML test interface (`frontend/index.html`) for testing API endpoints with visual feedback, statistics, and data previews
-- **Server Configuration**: Added command-line arguments for custom port/host configuration (`--port`, `--host`, `--debug`)
-- **API Documentation**: Comprehensive README in `server/README.md` with endpoint documentation and examples
+- **Coordinates Endpoint Removed**: Removed `/api/coordinates` endpoint to prevent performance issues (150MB+ data size). Coordinates remain available within data slice responses
+- **Frontend Optimized**: Removed large data array displays from frontend to prevent lag. Only summary statistics shown
+- **API Architecture Complete**: Flask REST API with endpoints for metadata, data slices, and timestep data. Supports salinity, temperature, and vertical velocity fields
 
 ## Blockers
 
@@ -96,6 +94,6 @@ None currently.
 
 ## Next Step
 
-**Test Flask API server**: Start the server (`python -m server.app --port 8080`) and test endpoints using the frontend test page (`frontend/index.html`) to verify data is being sent correctly from OpenVisus servers.
+**Research hosting options**: Investigate how to host the Flask server on the internet and whether Flask's built-in server is suitable for production deployment.
 
 
