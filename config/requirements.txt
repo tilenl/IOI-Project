@@ -18,3 +18,7 @@ xarray
 # engina za xarray
 netcdf4
 h5netcdf
+
+# Flask API server
+flask
+flask-cors
