@@ -31,6 +31,9 @@
 │   ├── ieee_scivis_llc4320.ipynb  # Main demo/verification notebook
 │   └── LLC4320_metadata.ipynb     # Metadata examples notebook
 │
+├── scripts/                       # Python scripts for data processing
+│   └── loading_data.py            # Script for loading and saving LLC4320 data
+│
 ├── data/                          # Data files (gitignored)
 │   └── llc4320_latlon.nc         # Coordinate data file
 │
@@ -52,6 +55,7 @@
 - **Documentation** → `docs/` (markdown files, guides; assets → `docs/.markdown_data/`)
 - **Analysis** → `analysis/` (research documents, findings, processing pipelines)
 - **Jupyter Notebooks** → `notebooks/` (all `.ipynb` files)
+- **Python Scripts** → `scripts/` (reusable data processing scripts)
 - **Data Files** → `data/` (all gitignored: NetCDF, HDF5, cache files)
 - **Configuration** → `config/` (dependencies, settings; `.gitignore` must stay at root)
 - **References** → `references/` (PDFs, papers, proposals)
@@ -66,9 +70,9 @@
 
 ## Recent Changes
 
-- **Data Access Analysis Complete**: Created `analysis/data_access_analysis.md` documenting available fields (theta, salt, w only; no u/v horizontal velocity) and alternative visualization approaches
-- **README Updated**: Added IEEE SciVis Contest 2026 challenge link
-- **All Initial Setup Tasks Complete**: All 8 tasks from TODO.md completed
+- **Data Loading Script Optimized**: `scripts/loading_data.py` now loads dataset once globally (not per timestep), significantly improving performance. Fixed parameter naming conflicts and removed time-based debugging for Python 3.10 compatibility
+- **Data Loading Script Created**: Script with configurable QUALITY (-12), NUMBER_OF_TIME_STEPS (10312), lat/lon ranges, and Z_RANGE. Loads salinity data across timesteps and saves to data folder
+- **Notebook Enhancements**: Added time range exploration and depth animation video creation to `ieee_scivis_llc4320.ipynb`
 
 ## Blockers
 
@@ -76,6 +80,6 @@ None currently.
 
 ## Next Step
 
-**Implement alternative visualization approaches**: Since horizontal velocity (u, v) is not available, explore alternative methods: vertical velocity visualization, gradient-based pseudo-velocity from temperature/salinity, or multi-variable visualizations combining available fields with advanced rendering techniques.
+**Execute data loading script**: Run `scripts/loading_data.py` to load salinity data (10312 timesteps at quality -12) and verify data size/structure. Script is optimized to load dataset once globally for efficient processing.
 
 

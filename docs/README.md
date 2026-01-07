@@ -37,6 +37,9 @@ Once you've verified your installation, explore the [`LLC4320_metadata.ipynb`](.
 │   ├── ieee_scivis_llc4320.ipynb # Main demo notebook - verify installation by running this
 │   └── LLC4320_metadata.ipynb   # Additional demo notebook - more examples of dataset usage
 │
+├── scripts/                     # Python scripts for data processing
+│   └── loading_data.py         # Script for loading and saving LLC4320 data
+│
 ├── data/                        # Data files (gitignored)
 │   └── llc4320_latlon.nc       # Coordinate data file
 │
@@ -63,6 +66,8 @@ Once you've verified your installation, explore the [`LLC4320_metadata.ipynb`](.
 - **`notebooks/ieee_scivis_llc4320.ipynb`**: The primary demonstration notebook. After completing installation, run this notebook to verify that everything is set up correctly. It shows how to access and visualize LLC4320 ocean data.
 
 - **`notebooks/LLC4320_metadata.ipynb`**: A secondary demo notebook providing additional examples of how to work with the LLC4320 dataset, including metadata extraction and other data manipulation techniques. **Note**: This notebook requires the `data/llc4320_latlon.nc` file, which is not tracked in git due to its size. See download instructions below.
+
+- **`scripts/loading_data.py`**: Python script for loading LLC4320 salinity data across multiple timesteps and saving it locally. Configurable quality settings and time/depth ranges.
 
 - **`data/llc4320_latlon.nc`**: A NetCDF file containing latitude and longitude coordinate information for the LLC4320 dataset, used in the metadata notebook examples. This file is excluded from version control (see `.gitignore`) and must be downloaded separately. Download link is provided in the `notebooks/LLC4320_metadata.ipynb` notebook, or contact aashishpanta0@gmail.com for access.
 
