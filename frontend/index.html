@@ -186,7 +186,37 @@
             gap: 10px;
             flex-wrap: wrap;
         }
+
+        .visualization-container {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        #dataVisualization {
+            width: 100%;
+            height: 600px;
+        }
+
+        .visualization-controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .colorbar-label {
+            margin-top: 10px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
     </style>
+    <!-- Plotly.js for data visualization -->
+    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -267,6 +297,11 @@
             </div>
             <div id="dataStatus"></div>
             <div id="dataResult"></div>
+            <div id="dataVisualizationContainer" class="visualization-container" style="display: none;">
+                <h3 style="margin-bottom: 15px;">Data Visualization</h3>
+                <div id="dataVisualization"></div>
+                <div class="colorbar-label" id="colorbarLabel"></div>
+            </div>
         </div>
 
     </div>
@@ -350,6 +385,8 @@
 
             showStatus('dataStatus', 'Loading data slice... (this may take a moment)', 'loading');
             clearStatus('dataResult');
+            // Hide visualization container initially
+            document.getElementById('dataVisualizationContainer').style.display = 'none';
 
             try {
                 const startTime = Date.now();
@@ -363,11 +400,13 @@
 
                 showStatus('dataStatus', `✓ Data loaded successfully in ${loadTime}s`, 'success');
 
-                // Calculate statistics
+                // Calculate statistics and prepare data for visualization
                 const dataArray = data.data.data;
                 let min = Infinity, max = -Infinity, sum = 0, count = 0;
+                let processedData = null;
 
                 if (format === 'array' && Array.isArray(dataArray)) {
+                    processedData = dataArray;
                     // Flatten 2D array for stats
                     for (const row of dataArray) {
                         if (Array.isArray(row)) {
@@ -381,6 +420,35 @@
                             }
                         }
                     }
+                } else if (format === 'base64' && data.data.format === 'base64') {
+                    // Decode base64 data
+                    try {
+                        const binaryString = atob(data.data.data);
+                        const bytes = new Uint8Array(binaryString.length);
+                        for (let i = 0; i < binaryString.length; i++) {
+                            bytes[i] = binaryString.charCodeAt(i);
+                        }
+                        const float32Array = new Float32Array(bytes.buffer);
+                        const shape = data.data.shape;
+                        processedData = [];
+                        for (let i = 0; i < shape[0]; i++) {
+                            const row = [];
+                            for (let j = 0; j < shape[1]; j++) {
+                                const idx = i * shape[1] + j;
+                                const val = float32Array[idx];
+                                row.push(val);
+                                if (typeof val === 'number' && !isNaN(val)) {
+                                    min = Math.min(min, val);
+                                    max = Math.max(max, val);
+                                    sum += val;
+                                    count++;
+                                }
+                            }
+                            processedData.push(row);
+                        }
+                    } catch (e) {
+                        console.error('Error decoding base64 data:', e);
+                    }
                 }
 
                 const mean = count > 0 ? (sum / count).toFixed(4) : 'N/A';
@@ -392,7 +460,7 @@
                             <div class="stat-label">Data Shape</div>
                             <div class="stat-value">${shape[0]} × ${shape[1]}</div>
                         </div>
-                        ${format === 'array' && count > 0 ? `
+                        ${count > 0 ? `
                             <div class="stat-card">
                                 <div class="stat-label">Min Value</div>
                                 <div class="stat-value">${min.toFixed(4)}</div>
@@ -413,12 +481,167 @@
                     </div>
                 `;
                 document.getElementById('dataResult').innerHTML = html;
+
+                // Visualize the data if we have processed data
+                if (processedData && processedData.length > 0 && processedData[0].length > 0) {
+                    try {
+                        visualizeData(processedData, data.coordinates, data.field, min, max);
+                    } catch (vizError) {
+                        console.error('Visualization error:', vizError);
+                        showStatus('dataStatus', `✓ Data loaded, but visualization failed: ${vizError.message}`, 'info');
+                    }
+                }
             } catch (error) {
                 showStatus('dataStatus', `✗ Error: ${error.message}`, 'error');
                 document.getElementById('dataResult').innerHTML = `<pre>${error.message}</pre>`;
+                // Hide visualization container on error
+                document.getElementById('dataVisualizationContainer').style.display = 'none';
             }
         }
 
+
+        function visualizeData(dataArray, coordinates, fieldName, minVal, maxVal) {
+            // Show visualization container
+            const container = document.getElementById('dataVisualizationContainer');
+            container.style.display = 'block';
+
+            // Get field units for labels
+            const fieldUnits = {
+                'salinity': 'g kg⁻¹',
+                'salt': 'g kg⁻¹',
+                'temperature': '°C',
+                'theta': '°C',
+                'vertical_velocity': 'm s⁻¹',
+                'w': 'm s⁻¹'
+            };
+            const unit = fieldUnits[fieldName.toLowerCase()] || '';
+
+            // Extract latitude and longitude arrays
+            const lat = coordinates.latitude;
+            const lon = coordinates.longitude;
+
+            // Prepare coordinate arrays for Plotly
+            // Plotly heatmap can use 1D arrays (for regular grids) or 2D arrays (for irregular grids)
+            let xCoords, yCoords;
+            
+            // Helper function to find min/max without using spread operator (avoids stack overflow)
+            function findMinMax(arr) {
+                let min = Infinity;
+                let max = -Infinity;
+                for (let i = 0; i < arr.length; i++) {
+                    if (Array.isArray(arr[i])) {
+                        for (let j = 0; j < arr[i].length; j++) {
+                            const val = arr[i][j];
+                            if (typeof val === 'number' && !isNaN(val)) {
+                                min = Math.min(min, val);
+                                max = Math.max(max, val);
+                            }
+                        }
+                    } else if (typeof arr[i] === 'number' && !isNaN(arr[i])) {
+                        min = Math.min(min, arr[i]);
+                        max = Math.max(max, arr[i]);
+                    }
+                }
+                return { min, max };
+            }
+            
+            if (Array.isArray(lat) && Array.isArray(lat[0]) && 
+                Array.isArray(lon) && Array.isArray(lon[0])) {
+                // We have 2D coordinate grids
+                // For heatmap, we can use the first row/column or create 1D arrays from min/max
+                // Using first row/column for x and y axes
+                xCoords = lon[0] || [];
+                yCoords = lat.map(row => row[0]) || [];
+                
+                // If dimensions don't match, create evenly spaced coordinates
+                if (xCoords.length !== dataArray[0].length || yCoords.length !== dataArray.length) {
+                    const latRange = findMinMax(lat);
+                    const lonRange = findMinMax(lon);
+                    
+                    const latStep = dataArray.length > 1 ? (latRange.max - latRange.min) / (dataArray.length - 1) : 0;
+                    const lonStep = dataArray[0].length > 1 ? (lonRange.max - lonRange.min) / (dataArray[0].length - 1) : 0;
+                    
+                    xCoords = Array.from({ length: dataArray[0].length }, (_, i) => lonRange.min + i * lonStep);
+                    yCoords = Array.from({ length: dataArray.length }, (_, i) => latRange.min + i * latStep);
+                }
+            } else {
+                // Fallback: create coordinate arrays from data ranges
+                // Try to get ranges from coordinates if available, otherwise use defaults
+                let latMin = -40, latMax = -10, lonMin = 105, lonMax = 160;
+                
+                if (Array.isArray(lat) && lat.length > 0) {
+                    const latRange = findMinMax(lat);
+                    latMin = latRange.min;
+                    latMax = latRange.max;
+                }
+                if (Array.isArray(lon) && lon.length > 0) {
+                    const lonRange = findMinMax(lon);
+                    lonMin = lonRange.min;
+                    lonMax = lonRange.max;
+                }
+                
+                const latStep = dataArray.length > 1 ? (latMax - latMin) / (dataArray.length - 1) : 0;
+                const lonStep = dataArray[0].length > 1 ? (lonMax - lonMin) / (dataArray[0].length - 1) : 0;
+                
+                xCoords = Array.from({ length: dataArray[0].length }, (_, i) => lonMin + i * lonStep);
+                yCoords = Array.from({ length: dataArray.length }, (_, i) => latMin + i * latStep);
+            }
+
+            // Create heatmap trace
+            const trace = {
+                z: dataArray,
+                x: xCoords,
+                y: yCoords,
+                type: 'heatmap',
+                colorscale: 'Viridis',
+                colorbar: {
+                    title: {
+                        text: `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} (${unit})`,
+                        font: { size: 14 }
+                    },
+                    len: 0.8,
+                    y: 0.5,
+                    yanchor: 'middle'
+                },
+                hovertemplate: 'Lat: %{y:.2f}°<br>Lon: %{x:.2f}°<br>Value: %{z:.4f} ' + unit + '<extra></extra>'
+            };
+
+            const layout = {
+                title: {
+                    text: `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} Data Visualization`,
+                    font: { size: 18 }
+                },
+                xaxis: {
+                    title: 'Longitude (°)',
+                    showgrid: true,
+                    gridcolor: 'rgba(128,128,128,0.2)'
+                },
+                yaxis: {
+                    title: 'Latitude (°)',
+                    showgrid: true,
+                    gridcolor: 'rgba(128,128,128,0.2)'
+                },
+                width: container.clientWidth - 40,
+                height: 600,
+                margin: { l: 80, r: 50, t: 60, b: 60 },
+                plot_bgcolor: 'white',
+                paper_bgcolor: 'white'
+            };
+
+            const config = {
+                responsive: true,
+                displayModeBar: true,
+                modeBarButtonsToRemove: ['pan2d', 'lasso2d'],
+                displaylogo: false
+            };
+
+            // Update colorbar label
+            document.getElementById('colorbarLabel').textContent = 
+                `Value range: ${minVal.toFixed(4)} to ${maxVal.toFixed(4)} ${unit}`;
+
+            // Plot the heatmap
+            Plotly.newPlot('dataVisualization', [trace], layout, config);
+        }
 
         // Test API connection on load
         window.addEventListener('load', async () => {
