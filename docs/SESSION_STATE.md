@@ -31,20 +31,30 @@
 │   ├── ieee_scivis_llc4320.ipynb  # Main demo/verification notebook
 │   └── LLC4320_metadata.ipynb     # Metadata examples notebook
 │
+├── server/                        # Flask API server
+│   ├── app.py                    # Flask application and routes
+│   ├── data_service.py           # Data loading from OpenVisus servers
+│   ├── README.md                 # API documentation
+│   └── __init__.py               # Package initialization
+│
+├── frontend/                      # Frontend test interface
+│   ├── index.html                # HTML test page for API testing
+│   └── README.md                 # Frontend usage instructions
+│
 ├── scripts/                       # Python scripts for data processing
-│   └── loading_data.py            # Script for loading and saving LLC4320 data
+│   └── loading_data.py           # Script for loading and saving LLC4320 data
 │
 ├── data/                          # Data files (gitignored)
-│   └── llc4320_latlon.nc         # Coordinate data file
+│   └── llc4320_latlon.nc        # Coordinate data file
 │
 ├── config/                        # Configuration files
-│   └── requirements.txt           # Python dependencies
+│   └── requirements.txt          # Python dependencies (includes Flask)
 │
 ├── references/                    # External references
-│   └── IOI_Project_proposal.pdf   # Project proposal PDF
+│   └── IOI_Project_proposal.pdf  # Project proposal PDF
 │
 ├── analysis/                      # Analysis and research documents
-│   └── data_access_analysis.md    # Data access and streamlines analysis
+│   └── data_access_analysis.md   # Data access and streamlines analysis
 │
 ├── TODO.md                        # Task tracking (root for visibility)
 └── .gitignore                     # Git ignore rules (root - required by Git)
@@ -53,6 +63,8 @@
 ### File Placement Guidelines
 
 - **Documentation** → `docs/` (markdown files, guides; assets → `docs/.markdown_data/`)
+- **Server/API** → `server/` (Flask application, data services, API routes)
+- **Frontend** → `frontend/` (HTML, CSS, JavaScript for web interface)
 - **Analysis** → `analysis/` (research documents, findings, processing pipelines)
 - **Jupyter Notebooks** → `notebooks/` (all `.ipynb` files)
 - **Python Scripts** → `scripts/` (reusable data processing scripts)
@@ -65,14 +77,18 @@
 
 - **Python Version**: Locked to 3.10 due to OpenVisus compatibility constraints
 - **Data Access**: Using OpenVisus framework for direct HTTPS access (no OSDF/Pelican cloud storage)
+- **API Architecture**: Flask REST API acts as gateway to OpenVisus servers - data loaded on-demand, not cached locally
+- **Frontend**: Simple HTML/JavaScript test interface for API validation
 - **Environment Management**: Virtual environment (`.venv`) with strict dependency versioning
 - **Critical Constraint**: Do NOT run `OpenVisus configure` commands after installation (invalidates signatures, causes kernel crashes)
 
 ## Recent Changes
 
-- **Data Loading Script Optimized**: `scripts/loading_data.py` now loads dataset once globally (not per timestep), significantly improving performance. Fixed parameter naming conflicts and removed time-based debugging for Python 3.10 compatibility
-- **Data Loading Script Created**: Script with configurable QUALITY (-12), NUMBER_OF_TIME_STEPS (10312), lat/lon ranges, and Z_RANGE. Loads salinity data across timesteps and saves to data folder
-- **Notebook Enhancements**: Added time range exploration and depth animation video creation to `ieee_scivis_llc4320.ipynb`
+- **Flask API Server Created**: REST API server (`server/app.py`, `server/data_service.py`) with endpoints for metadata, data slices, timestep data, and coordinates. Supports all three fields (salinity, temperature, vertical velocity)
+- **Data Service Restructured**: `server/data_service.py` loads data directly from OpenVisus servers on-demand (not from local files). Dataset objects cached in memory for performance
+- **Frontend Test Page**: HTML test interface (`frontend/index.html`) for testing API endpoints with visual feedback, statistics, and data previews
+- **Server Configuration**: Added command-line arguments for custom port/host configuration (`--port`, `--host`, `--debug`)
+- **API Documentation**: Comprehensive README in `server/README.md` with endpoint documentation and examples
 
 ## Blockers
 
@@ -80,6 +96,6 @@ None currently.
 
 ## Next Step
 
-**Execute data loading script**: Run `scripts/loading_data.py` to load salinity data (10312 timesteps at quality -12) and verify data size/structure. Script is optimized to load dataset once globally for efficient processing.
+**Test Flask API server**: Start the server (`python -m server.app --port 8080`) and test endpoints using the frontend test page (`frontend/index.html`) to verify data is being sent correctly from OpenVisus servers.
 
 
