@@ -436,25 +436,6 @@
                             <div class="stat-value">${data.data.format}</div>
                         </div>
                     </div>
-                    <h3 style="margin-top: 20px; margin-bottom: 10px;">Data Preview (first 10×10):</h3>
-                    <pre class="data-preview">${format === 'array' && Array.isArray(dataArray) 
-                        ? JSON.stringify(dataArray.slice(0, 10).map(row => Array.isArray(row) ? row.slice(0, 10) : row), null, 2)
-                        : 'Base64 format - decode on frontend to view'}
-                    </pre>
-                    <h3 style="margin-top: 20px; margin-bottom: 10px;">Coordinates Preview:</h3>
-                    <pre class="data-preview">Latitude range: [${data.coordinates.latitude[0]?.[0]?.toFixed(4)}, ${data.coordinates.latitude[data.coordinates.latitude.length - 1]?.[data.coordinates.latitude[0]?.length - 1]?.toFixed(4)}]
-Longitude range: [${data.coordinates.longitude[0]?.[0]?.toFixed(4)}, ${data.coordinates.longitude[data.coordinates.longitude.length - 1]?.[data.coordinates.longitude[0]?.length - 1]?.toFixed(4)}]
-Shape: ${data.coordinates.latitude.length} × ${data.coordinates.latitude[0]?.length || 0}</pre>
-                    <h3 style="margin-top: 20px; margin-bottom: 10px;">Full Response (truncated):</h3>
-                    <pre class="data-preview">${JSON.stringify({
-                        ...data,
-                        data: {
-                            ...data.data,
-                            data: format === 'array' && Array.isArray(dataArray) && dataArray.length > 0
-                                ? `[Array(${dataArray.length}×${dataArray[0]?.length || 0}) - truncated]`
-                                : data.data.data
-                        }
-                    }, null, 2)}</pre>
                 `;
                 document.getElementById('dataResult').innerHTML = html;
             } catch (error) {
@@ -511,12 +492,6 @@ Shape: ${data.coordinates.latitude.length} × ${data.coordinates.latitude[0]?.le
                             </div>
                         ` : ''}
                     </div>
-                    <h3 style="margin-top: 20px; margin-bottom: 10px;">Coordinates Preview (first 5×5):</h3>
-                    <pre class="data-preview">Latitude:
-${JSON.stringify(data.latitude.slice(0, 5).map(row => row.slice(0, 5)), null, 2)}
-
-Longitude:
-${JSON.stringify(data.longitude.slice(0, 5).map(row => row.slice(0, 5)), null, 2)}</pre>
                 `;
                 document.getElementById('coordResult').innerHTML = html;
             } catch (error) {

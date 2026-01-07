@@ -26,3 +26,4 @@
 [x] **Set up Flask server**: Create Flask API server structure with endpoints to access LLC4320 data. Server should load data directly from OpenVisus servers (not local files) and provide RESTful API for frontend access.
 
 [x] **Create frontend test page**: Build simple HTML test interface to verify Flask API is sending data correctly. Include forms for testing metadata, data slices, and coordinates endpoints.
+
